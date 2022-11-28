@@ -8,17 +8,17 @@ haskell-cli-template - a short description
 
 # SYNOPSIS
 
-*haskell-cli-template* \[options] \<args>
+_haskell-cli-template_ \[options] \<args>
 
 # OPTIONS
 
-**\-e**, **\--example-flag** *\<ARG>*\
+**\-e**, **\--example-flag** _\<ARG>_\
 
 > How to do the blah. Default is **.**.
 
 # ENVIRONMENT
 
-*SOME_ENV*\
+_SOME_ENV_\
 
 > Describe how this changes our behavior.
 
