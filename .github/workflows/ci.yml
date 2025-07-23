@@ -13,7 +13,7 @@ jobs:
       - uses: freckle/stack-cache-action@v2
       - id: stack
         uses: freckle/stack-action@v5
-      - uses: freckle/weeder-action@v2
+      - uses: freckle/weeder-action@v3
         with:
           ghc-version: ${{ steps.stack.outputs.compiler-version }}
 
