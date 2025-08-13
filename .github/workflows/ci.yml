@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: freckle/stack-cache-action@v2
       - id: stack
         uses: freckle/stack-action@v5
@@ -20,7 +20,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: haskell/actions/hlint-setup@v2
       - uses: haskell/actions/hlint-run@v2
         with:
