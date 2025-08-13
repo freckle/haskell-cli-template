@@ -9,7 +9,7 @@ jobs:
     if: false # Remove when ready to release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: tag
         uses: freckle/haskell-tag-action@v1
         env:
@@ -22,7 +22,7 @@ jobs:
     if: needs.tag.outputs.tag
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: release-notes
         uses: freckle/release-notes-action@v1
         with:
@@ -53,7 +53,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: freckle/stack-cache-action@v2
       - uses: r-lib/actions/setup-pandoc@v2
       - if: ${{ runner.os == 'macOS' }}
