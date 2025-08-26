@@ -14,14 +14,16 @@ gh repo create --template freckle/haskell-cli-template --public freckle/<name>
 sed -i s/haskell-cli-template/my-name/ ./**/*
 ```
 
-## Enable release
+## Release
 
-When you are ready to release your CLI, simply remove the conditional from the
-release workflow.
+To trigger a new release, push a [conventional commit] to `main`:
 
-```diff
--      - if: false # Remove when ready to release
-```
+- `fix:` to trigger a patch release
+- `feat:` to trigger a minor release
+- Use `<type>!:` or include a `BREAKING CHANGE: <change>` footer to trigger
+  major
+
+[conventional commit]: https://www.conventionalcommits.org/en/v1.0.0/#summary
 
 ---
 

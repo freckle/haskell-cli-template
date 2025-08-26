@@ -2,46 +2,12 @@ name: Release
 
 on:
   push:
-    branches: main
+    branches:
+      - main
+      - rc/*
 
 jobs:
-  tag:
-    if: false # Remove when ready to release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - id: tag
-        uses: freckle/haskell-tag-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    outputs:
-      tag: ${{ steps.tag.outputs.tag }}
-
-  create-release:
-    needs: tag
-    if: needs.tag.outputs.tag
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - id: release-notes
-        uses: freckle/release-notes-action@v1
-        with:
-          version: ${{ needs.tag.outputs.tag }}
-      - uses: actions/create-release@v1
-        id: create-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ needs.tag.outputs.tag }}
-          release_name: Release ${{ needs.tag.outputs.tag }}
-          body_path: ${{ steps.release-notes.outputs.path }}
-          draft: false
-          prerelease: false
-    outputs:
-      upload_url: ${{ steps.create-release.outputs.upload_url }}
-
-  upload-assets:
-    needs: create-release
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -54,17 +20,51 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
+
+      # Do a dry-run release in order to update package.yaml before compilation,
+      # in case there's a --version subcommand.
+      - uses: cycjimmy/semantic-release-action@v4
+        with:
+          dry_run: true
+          extra_plugins: |
+            conventional-changelog-conventionalcommits
+            @semantic-release/exec
+        env:
+          FORCE_COLOR: 1
+          GITHUB_TOKEN: ${{ github.token }}
+
       - uses: freckle/stack-cache-action@v2
       - uses: r-lib/actions/setup-pandoc@v2
       - if: ${{ runner.os == 'macOS' }}
-        run: brew install coreutils # need GNU install
-      - run: make install.check PANDOC=pandoc
-      - uses: actions/upload-release-asset@v1
-        id: upload-release-asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # stack was removed in macOS-14 which is now latest
+          # https://discourse.haskell.org/t/github-hosted-runner-for-macos-aarch64/8717/16
+          curl -sSL https://get.haskellstack.org/ | sh
+
+          brew install coreutils make
+          echo '/opt/homebrew/opt/make/libexec/gnubin' >>"$GITHUB_PATH"
+          echo '/usr/local/opt/make/libexec/gnubin' >>"$GITHUB_PATH"
+      - run: |
+          make install.check PANDOC=pandoc
+          cp -v dist/haskell-cli-template.tar.gz haskell-cli-template-${{ matrix.suffix }}.tar.gz
+      - uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./dist/haskell-cli-template.tar.gz
-          asset_name: haskell-cli-template-${{ matrix.suffix }}.tar.gz
-          asset_content_type: application/gzip
+          name: ${{ matrix.os }}-binaries
+          path: "haskell-cli-template-*.tar.gz"
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - id: release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: |
+            conventional-changelog-conventionalcommits
+            @semantic-release/exec
+        env:
+          FORCE_COLOR: 1
+          GITHUB_TOKEN: ${{ github.token }}
