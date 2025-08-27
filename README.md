@@ -4,6 +4,7 @@ Haskell CLI template used at Freckle.
 
 ## Create your repo
 
+If you are working within the freckle org, use github-vending-machine. Otherwise:
 ```sh
 gh repo create --template freckle/haskell-cli-template --public freckle/<name>
 ```
