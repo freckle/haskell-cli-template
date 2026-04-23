@@ -33,7 +33,7 @@ jobs:
           FORCE_COLOR: 1
           GITHUB_TOKEN: ${{ github.token }}
 
-      - uses: freckle/stack-cache-action@v2
+      - uses: freckle/stack-cache-action@v3.0.0
       - uses: r-lib/actions/setup-pandoc@v2
       - if: ${{ runner.os == 'macOS' }}
         run: |
