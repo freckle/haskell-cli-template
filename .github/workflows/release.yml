@@ -23,7 +23,7 @@ jobs:
 
       # Do a dry-run release in order to update package.yaml before compilation,
       # in case there's a --version subcommand.
-      - uses: cycjimmy/semantic-release-action@v8.1.0
+      - uses: cycjimmy/semantic-release-action@v8.1.2
         # conventional-changelog-conventionalcommits is held at 9.x: v10 needs
         # conventional-changelog-writer@9, which semantic-release@25 does not ship.
         with:
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
       - id: release
-        uses: cycjimmy/semantic-release-action@v8.1.0
+        uses: cycjimmy/semantic-release-action@v8.1.2
         # conventional-changelog-conventionalcommits is held at 9.x: v10 needs
         # conventional-changelog-writer@9, which semantic-release@25 does not ship.
         with:
